@@ -3,13 +3,15 @@
 
 static char kKVOContext;
 static CGFloat const kViewHeight = 44;
-static CGFloat const kMaxStretchFactor = 1.5;
+static CGFloat const kMaxStretchFactor = 1.7;
 static NSTimeInterval const kAnimationDuration = 0.25;
 
 @interface PHFRefreshControl ()
 @property (nonatomic, getter=isRefreshing) BOOL refreshing;
+@property (nonatomic) BOOL customActivityView;
 @property (nonatomic, strong) UIImageView *arrowImageView;
 @property (nonatomic, strong) UIActivityIndicatorView *activityIndicatorView;
+@property (nonatomic, strong) UIView *customActivityIndicatorView;
 @property (nonatomic, unsafe_unretained) UIScrollView *scrollView;
 @property (nonatomic, strong) NSDate *animationStartDate;
 @end
@@ -54,6 +56,20 @@ static NSTimeInterval const kAnimationDuration = 0.25;
             [self performSelector:@selector(endRefreshing) withObject:nil afterDelay:remainingAnimationDuration];
         }
     }
+}
+
+- (void)setCustomActivityIndicatorView:(UIView *)activityView {
+	[_activityIndicatorView removeFromSuperview];
+	_activityIndicatorView = nil;
+	
+	_customActivityIndicatorView = activityView;
+	[_customActivityIndicatorView setAutoresizingMask:UIViewAutoresizingFlexibleLeftMargin|UIViewAutoresizingFlexibleRightMargin];
+	[_customActivityIndicatorView setCenter:[self centerForSubviews]];
+	[_customActivityIndicatorView setAlpha:0];
+	
+	[self addSubview:_customActivityIndicatorView];
+	
+	self.customActivityView = YES;
 }
 
 #pragma mark - Accessors
@@ -128,17 +144,21 @@ static NSTimeInterval const kAnimationDuration = 0.25;
 }
 
 @synthesize activityIndicatorView = _activityIndicatorView;
-- (UIActivityIndicatorView *)activityIndicatorView {
-    if (!_activityIndicatorView) {
-        _activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-
-        [_activityIndicatorView setAutoresizingMask:UIViewAutoresizingFlexibleLeftMargin|UIViewAutoresizingFlexibleRightMargin];
-        [_activityIndicatorView setCenter:[self centerForSubviews]];
-        [_activityIndicatorView startAnimating];
-        [[self activityIndicatorView] setAlpha:0];
-    }
-
-    return _activityIndicatorView;
+- (UIView *)activityIndicatorView {
+	if (!self.customActivityView) {
+		if (!_activityIndicatorView) {
+			_activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+			
+			[_activityIndicatorView setAutoresizingMask:UIViewAutoresizingFlexibleLeftMargin|UIViewAutoresizingFlexibleRightMargin];
+			[_activityIndicatorView setCenter:[self centerForSubviews]];
+			[_activityIndicatorView startAnimating];
+			[[self activityIndicatorView] setAlpha:0];
+		}
+		
+		return _activityIndicatorView;
+	} else {
+		return _customActivityIndicatorView;
+	}
 }
 
 @synthesize tintColor = _tintColor;

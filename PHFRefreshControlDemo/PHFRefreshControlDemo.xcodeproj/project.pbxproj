@@ -255,6 +255,7 @@
 				D5EB332015EC998400FF8C9B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

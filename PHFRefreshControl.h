@@ -11,6 +11,7 @@
 
 - (void)beginRefreshing;
 - (void)endRefreshing;
+- (void)setCustomActivityIndicatorView:(UIView *)activityView;
 
 @end
 
